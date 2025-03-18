@@ -29,7 +29,7 @@ def train_model(model, save_model=True):
         running_train_loss /= len(train_dataloader)
         train_accuracy = train_correct_preds / (
             len(train_dataloader) * train_dataloader.batch_size
-        )
+        )  # type: ignore
 
         running_test_loss = 0.0
         test_correct_preds = 0
@@ -46,7 +46,7 @@ def train_model(model, save_model=True):
         running_test_loss /= len(test_dataloader)
         test_accuracy = test_correct_preds / (
             len(test_dataloader) * test_dataloader.batch_size
-        )
+        )  # type: ignore
 
         print(f"\n\nEpoch number {epoch + 1}")
         print(
