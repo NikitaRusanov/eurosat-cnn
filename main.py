@@ -1,5 +1,10 @@
+from src import train_model, MyNet
+
+
 def main():
-    print("Hello from hw3!")
+    model = MyNet()
+
+    train_model(model)
 
 
 if __name__ == "__main__":
