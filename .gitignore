@@ -2,3 +2,5 @@
 data_raw/
 */__pycache__
 *.pth
+mlruns
+mlartifacts
