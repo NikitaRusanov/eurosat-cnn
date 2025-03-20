@@ -2,8 +2,6 @@ import torch
 import torchvision
 import torchvision.transforms as trasnsforms
 import ssl
-import numpy as np
-from matplotlib import pyplot as plt
 
 import src.settings as settings
 
@@ -36,14 +34,7 @@ def get_class_by_idx(idx: int) -> str:
     return _idx_to_class[idx]
 
 
-def _imshow(img):
-    img = img / 2 + 0.5
-    npimg = img.numpy()
-    plt.imshow(np.transpose(npimg, (1, 2, 0)))
-    plt.show()
+def get_sample():
+    sample = _test_dataset[int(torch.randint(0, len(_test_dataset), (1,)).item())]
 
-
-def show_sample():
-    img, label = _dataset[int(torch.randint(0, len(_dataset), (1,)).item())]
-    plt.title(get_class_by_idx(label))
-    _imshow(torchvision.utils.make_grid(img))
+    return sample
