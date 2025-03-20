@@ -3,6 +3,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 import torch
 import torchvision
+import mlflow
 
 from src import train_model, MyNet, get_sample, get_class_by_idx
 import src.settings as settings
@@ -20,13 +21,17 @@ def show_sample(img, title: str):
     _imshow(torchvision.utils.make_grid(img))
 
 
-def main():
-    model_path = Path(settings.MODEL_SAVE_PATH)
-    model = MyNet()
-    if model_path.exists():
-        model.load_state_dict(torch.load(model_path, weights_only=True))
-    else:
-        train_model(model)
+def main(exp_name: str = "Default"):
+    mlflow.set_experiment(exp_name)
+
+    with mlflow.start_run():
+        model_path = Path(settings.MODEL_SAVE_PATH)
+        model = MyNet()
+        if model_path.exists():
+            model.load_state_dict(torch.load(model_path, weights_only=True))
+        else:
+            train_model(model)
+        mlflow.pytorch.log_model(model, "model")
 
     for _ in range(6):
         img, label = get_sample()
@@ -39,4 +44,5 @@ def main():
 
 
 if __name__ == "__main__":
+    mlflow.set_tracking_uri(settings.MLFLOW_URL)
     main()

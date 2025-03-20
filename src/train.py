@@ -2,16 +2,30 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from tqdm import tqdm
+import mlflow
 
 import src.settings as settings
 from src.data import train_dataloader, test_dataloader
 
 
-def train_model(model, save_model=True):
+def train_model(
+    model: nn.Module,
+    lr: float = 1e-3,
+    max_epoch: int = 10,
+    save_model: bool = True,
+):
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=1e-3)
+    optimizer = optim.Adam(model.parameters(), lr=lr)
 
-    for epoch in tqdm(range(settings.MAX_EPOCH)):
+    mlflow.log_params(
+        {
+            "max_epoch": max_epoch,
+            "learning_rate": lr,
+            "optimizer": "Adam",
+        }
+    )
+
+    for epoch in tqdm(range(max_epoch)):
         running_train_loss = 0.0
         train_correct_preds = 0
         for inputs, labels in tqdm(train_dataloader):
@@ -31,6 +45,11 @@ def train_model(model, save_model=True):
             len(train_dataloader) * train_dataloader.batch_size
         )  # type: ignore
 
+        mlflow.log_metrics(
+            {"train loss": running_train_loss, "train accuracy": train_accuracy},
+            step=epoch,
+        )
+
         running_test_loss = 0.0
         test_correct_preds = 0
         with torch.no_grad():
@@ -47,6 +66,11 @@ def train_model(model, save_model=True):
         test_accuracy = test_correct_preds / (
             len(test_dataloader) * test_dataloader.batch_size
         )  # type: ignore
+
+        mlflow.log_metrics(
+            {"test loss": running_test_loss, "test accuracy": test_accuracy},
+            step=epoch,
+        )
 
         print(f"\n\nEpoch number {epoch + 1}")
         print(
